@@ -9,6 +9,12 @@
   let characterIndex = 0;
   let deleting = false;
 
+  function removeHeroArt() {
+    const heroArt = document.querySelector('.hero-art');
+    if (!heroArt) return;
+    heroArt.remove();
+  }
+
   const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (character) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
   }[character]));
@@ -146,6 +152,7 @@
   setupPdfStyles();
   renderSkills();
   renderProjects();
+  removeHeroArt();
   renderPortrait();
   renderResumeModules();
   renderPdfWorks();
