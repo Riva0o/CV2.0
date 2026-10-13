@@ -1,163 +1,72 @@
-(function () {
-  const data = window.portfolioData;
-  const views = document.querySelectorAll('.view');
-  const navButtons = document.querySelectorAll('[data-view]');
-  const nav = document.querySelector('.nav');
-  const menu = document.querySelector('.menu');
-  const typedRole = document.querySelector('#typed-role');
-  let roleIndex = 0;
-  let characterIndex = 0;
-  let deleting = false;
+import {initAtmosphere} from './interactions.js';
+import {site, projects, experiments} from './data.js';
+const main = document.querySelector('main');
+let disposeAtmosphere = () => {};
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safe = path => typeof path === 'string' && (path.startsWith('/') && !path.startsWith('//') || /^https?:\/\//.test(path)) ? path : '';
+const all = [...projects,...experiments].filter(p=>!p.unpublished);
+const route = p => `/work/${encodeURIComponent(p.slug)}`;
+function placeholder(index='—',label='素材待补充',ratio=''){return `<div class="placeholder" ${ratio?`style="aspect-ratio:${esc(ratio)}"`:''}><span class="placeholder-corner">＋</span><span class="placeholder-index" aria-hidden="true">${esc(index)}</span><span class="placeholder-label">${esc(label)}</span></div>`;}
+function image(media,{zoom=false,eager=false,index='—'}={}){
+  if(!safe(media?.src)) return placeholder(index);
+  const tag=`<img class="media" src="${esc(safe(media.src))}" alt="${esc(media.alt||'作品图像')}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async" style="--ratio:${esc(media.aspectRatio||'1.85')};--fit:${media.fit==='contain'?'contain':'cover'};--position:${esc(media.position||'center')}" data-fallback="${esc(index)}">`;
+  return zoom?`<button class="image-button" data-zoom="${esc(safe(media.src))}" data-alt="${esc(media.alt)}" data-caption="${esc(media.caption)}" aria-label="放大：${esc(media.alt||'作品图像')}">${tag}</button>`:tag;
+}
+function heading(n,title,copy,extra=''){return `<div class="section-heading"><span class="label">${n}</span><div><h2>${title}</h2>${copy?`<p>${copy}</p>`:''}</div>${extra}</div>`;}
+function rows(items){return items.filter(p=>!p.unpublished).map(p=>`<div class="cv-row"><span class="date">${esc(p.date)}</span><div><h4>${esc(p.title)}</h4><div class="role">${esc(p.role)}${p.location?` · ${esc(p.location)}`:''}</div>${p.text?`<p>${esc(p.text)}</p>`:''}</div></div>`).join('');}
+function home(){
+ document.title='Protoaxis Studio — 数字形态，实体体验。';
+ main.innerHTML=`<section class="immersive" aria-labelledby="hero-title"><img class="relief-background" src="${esc(site.hero.relief)}" alt="中国神话主题的汉白玉浮雕视觉背景：龙、凤、祥云与山海" fetchpriority="high"><canvas class="mist" aria-hidden="true"></canvas><div class="hero-center"><span class="hero-signature">PROTOAXIS STUDIO</span><h1 id="hero-title">数字形态，实体体验。</h1><a class="hero-scroll" href="#studio-story">Scroll to discover <span>↓</span></a></div><div class="immersive-foot"><span>FORM / MATERIAL / EXPERIENCE</span><div class="mist-actions"><span class="mist-hint">移动鼠标，拨开雾气</span><button class="reveal-toggle" aria-pressed="false">揭开浮雕 ＋</button></div><span class="visual-credit">AI 生成 · 界面视觉</span></div></section><section id="studio-story" class="studio-story"><div class="story-sticky"><span class="story-label">PROTOAXIS / A CONTINUING PRACTICE</span><div class="story-lines"><p>我是一名数字设计师，<br>也是 Protoaxis Studio 的创始人。</p><p>从三维形态与材质出发，<br>探索数字创意在实体空间中的呈现。</p><p>在视觉、装置与品牌体验之间，<br>让形态成为真实可感的体验。</p></div><a href="#project" class="story-next">Explore the projects ↘</a></div></section><div class="shell"><section id="project" class="section">${heading('01 / SELECTED WORK','形态的不同可能。','Protoaxis Studio — 三维视觉、空间装置与品牌体验。',`<span class="mono">INDEX / 01—${String(projects.filter(p=>!p.unpublished).length).padStart(2,'0')}</span>`)}<div>${projects.filter(p=>!p.unpublished).map((p,i)=>`<article class="project"><div class="project-aside"><span class="label">${String(i+1).padStart(2,'0')} / ${p.status==='placeholder'?'PROJECT SLOT':esc(p.year||'')}</span><h3>${esc(p.title)}</h3><p>${p.category.length?esc(p.category.join(' / ')):'项目内容与素材待补充'}</p><a class="text-link" href="${route(p)}">${p.status==='placeholder'?'查看详情模板':'查看项目'} <span>↗</span></a></div><div class="project-visual"><a href="${route(p)}" aria-label="${esc(p.title)} ${i+1}，${p.status==='placeholder'?'详情模板':'作品详情'}">${image(p.cover,{index:String(i+1).padStart(2,'0')})}</a><div class="caption"><span>${p.role.length?esc(p.role.join(' / ')):'PROTOAXIS STUDIO'}</span><span>${p.status==='placeholder'?'素材待补充':esc(p.year||'')}</span></div></div></article>`).join('')}</div></section></div><section id="wallpaper" class="experiments">${heading('02 / AXIS WALLPAPER','图像，作为研究。','Axis wallpaper — AI Wallpaper & Image Studies<br>围绕形态、材质、色彩与构图展开的 AI 壁纸和图像实验。')}<div class="experiment-grid">${experiments.filter(p=>!p.unpublished).map((p,i)=>`<article><a href="${route(p)}">${p.cover?image(p.cover):placeholder(`0${i+1}`,'实验素材待补充')}<h3>${esc(p.title)} ↗</h3></a><p class="mono">${p.status==='placeholder'?'SERIES TEMPLATE':esc(p.category.join(' / '))}</p></article>`).join('')}</div></section><div class="shell"><section id="about" class="section">${heading('03 / ABOUT','在数字与实体之间。','')}<div class="about-grid"><div class="about-number" aria-hidden="true">p.</div><div class="about-copy">${site.about.map(p=>`<p>${esc(p)}</p>`).join('')}<div class="discipline"><span>FORM & MATERIAL</span><span>SPACE & EXPERIENCE</span><span>IMAGE & NARRATIVE</span></div></div></div></section><section id="cv" class="section">${heading('04 / CURRICULUM VITAE','创作路径。','跨越媒介的实践，构成今天的设计视角。',safe(site.cvFile)?`<a class="text-link" href="${esc(site.cvFile)}" download>下载 CV ↓</a>`:'')}<div class="cv-layout"><p class="cv-note">从纺织与时尚，到空间、三维与数字内容。<br><br>经历按真实日期呈现。</p><div><div class="cv-group"><h3>主要实践 / PRACTICE</h3>${rows(site.practices)}</div><div class="cv-group"><h3>相关经历 / EXPERIENCE</h3>${rows(site.experience)}</div><div class="cv-group"><h3>教育 / EDUCATION</h3>${rows(site.education)}</div>${site.awards.some(p=>!p.unpublished)?`<div class="cv-group"><h3>精选荣誉 / RECOGNITION</h3>${rows(site.awards)}</div>`:''}<div class="cv-group"><h3>工具与方向 / TOOLKIT</h3><div class="skill-grid">${site.skills.map(([a,b])=>`<div><h4>${esc(a)}</h4><p>${esc(b)}</p></div>`).join('')}</div><p class="cv-note" style="max-width:none">${esc(site.languages)}</p></div></div></div></section></div><section id="contact" class="contact"><div class="contact-top"><span class="label">05 / CONTACT</span><span class="label">${esc(site.location)}</span></div><h2>让想法，<br>有一个新的起点。</h2><div class="contact-bottom"><div><span class="label">${esc(site.name)}</span><p>项目合作、设计机会与创作交流。</p></div><div class="actions"><div><span class="label">小红书账号</span><br><button class="copy" data-copy="${esc(site.account)}" aria-label="复制小红书账号 ${esc(site.account)}">${esc(site.account)} <span>↗</span></button><p>点击复制账号</p></div>${site.email?`<a class="text-link" href="mailto:${esc(site.email)}">邮件联系 ↗</a>`:''}${safe(site.socialUrl)?`<a class="text-link" href="${esc(site.socialUrl)}" target="_blank" rel="noopener">访问主页 ↗</a>`:''}</div></div></section>`;
 
-  function removeHeroArt() {
-    const heroArt = document.querySelector('.hero-art');
-    if (!heroArt) return;
-    heroArt.remove();
-  }
-
-  const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (character) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-  }[character]));
-
-  function typeRole() {
-    const role = data.roles[roleIndex];
-    typedRole.textContent = role.slice(0, characterIndex);
-    if (!deleting && characterIndex < role.length) {
-      characterIndex += 1;
-      window.setTimeout(typeRole, 105);
-      return;
-    }
-    if (!deleting) {
-      deleting = true;
-      window.setTimeout(typeRole, 1500);
-      return;
-    }
-    if (characterIndex > 0) {
-      characterIndex -= 1;
-      window.setTimeout(typeRole, 55);
-      return;
-    }
-    deleting = false;
-    roleIndex = (roleIndex + 1) % data.roles.length;
-    window.setTimeout(typeRole, 250);
-  }
-
-  function switchView(name) {
-    views.forEach((view) => view.classList.toggle('active', view.dataset.page === name));
-    navButtons.forEach((button) => {
-      if (button.dataset.view) button.classList.toggle('active', button.dataset.view === name);
-    });
-    nav.classList.remove('open');
-    menu.setAttribute('aria-expanded', 'false');
-    history.replaceState(null, '', `#${name}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function setupNavigation() {
-    navButtons.forEach((button) => button.addEventListener('click', (event) => {
-      event.preventDefault();
-      switchView(button.dataset.view);
-    }));
-    menu.addEventListener('click', () => {
-      const open = nav.classList.toggle('open');
-      menu.setAttribute('aria-expanded', open);
-    });
-    const initialView = location.hash.slice(1);
-    if (['about', 'skills', 'projects', 'contact'].includes(initialView)) switchView(initialView);
-  }
-
-  function setupProjectFilters() {
-    document.querySelectorAll('.filter').forEach((button) => button.addEventListener('click', () => {
-      document.querySelectorAll('.filter').forEach((item) => item.classList.remove('active'));
-      button.classList.add('active');
-      document.querySelectorAll('.project-card').forEach((card) => {
-        card.hidden = button.dataset.filter !== 'all' && card.dataset.category !== button.dataset.filter;
-      });
-    }));
-  }
-
-  function setupContactForm() {
-    document.querySelector('.contact-form').addEventListener('submit', (event) => {
-      event.preventDefault();
-      event.currentTarget.querySelector('.form-message').textContent = data.formSuccess;
-      event.currentTarget.reset();
-    });
-  }
-
-  function renderSkills() {
-    const list = document.querySelector('.skill-list');
-    const cloud = document.querySelector('.tool-cloud');
-    list.innerHTML = data.skills.map((skill) => `<div><div class="skill-top"><span>${escapeHtml(skill.name)}</span><b>${skill.level}%</b></div><div class="bar"><i style="--level:${skill.level}%"></i></div></div>`).join('');
-    cloud.innerHTML = `<strong>TOOLKIT</strong>${escapeHtml(data.tools)}<br><br><strong>LANGUAGE</strong>${escapeHtml(data.languages)}`;
-  }
-
-  function renderProjects() {
-    const grid = document.querySelector('.project-grid');
-    grid.innerHTML = data.projects.map((project, index) => {
-      const statement = project.statement ? `<strong>${escapeHtml(project.statement).replace(/\n/g, '<br>')}</strong>` : `<b>${escapeHtml(project.word).replace(/\n/g, '<br>')}</b>`;
-      const visualContent = project.visual === 'green' ? `<span class="art-word">${escapeHtml(project.word)}</span><div class="art-window"><i></i><i></i><i></i>${statement}</div>` : project.visual === 'orange' ? `<div class="art-copy">${escapeHtml(project.word).replace(/\n/g, '<br>')}</div><div class="sun"></div>` : `<div class="grid-lines"></div><div class="phone"><span>${escapeHtml(project.word)}</span><b>让体验<br>从一个<br>好想法开始</b></div>`;
-      const image = project.image ? `<img class="project-photo" src="${escapeHtml(project.image)}" alt="${escapeHtml(project.title)} 项目图片" loading="lazy">` : '';
-      return `<article class="project-card reveal${index % 2 ? ' delay' : ''}" data-category="${escapeHtml(project.category)}"><div class="project-art ${escapeHtml(project.visual)}">${image}${visualContent}</div><div class="project-info"><div><h3>${escapeHtml(project.title)}</h3><p>${escapeHtml(project.year)}</p></div><span>↗</span></div></article>`;
-    }).join('');
-  }
-
-  function renderPortrait() {
-    const card = document.querySelector('.contact-card');
-    if (!card || !data.profile.portrait) return;
-    const portrait = document.createElement('img');
-    portrait.className = 'profile-photo';
-    portrait.src = data.profile.portrait;
-    portrait.alt = `${data.profile.name} 证件照`;
-    portrait.loading = 'lazy';
-    card.prepend(portrait);
-  }
-
-  function renderResumeModules() {
-    const about = document.querySelector('.about-content');
-    const modules = document.createElement('div');
-    modules.className = 'module-dock';
-    modules.innerHTML = data.modules.map((module) => {
-      let content = '';
-      if (module.type === 'education') content = data.education.map((item) => `<li><b>${escapeHtml(item.period)}</b><span><strong>${escapeHtml(item.title)}</strong>${escapeHtml(item.organization)}${item.detail ? `<small>${escapeHtml(item.detail)}</small>` : ''}</span></li>`).join('');
-      if (module.type === 'experience') content = data.experience.map((item) => `<li><b>${escapeHtml(item.period)}</b><span><strong>${escapeHtml(item.title)}</strong>${escapeHtml(item.organization)}<small>${escapeHtml(item.detail)}</small></span></li>`).join('');
-      if (module.type === 'awards') content = data.awards.map((award) => `<li><span>${escapeHtml(award)}</span></li>`).join('');
-      return `<section class="data-module reveal"><p class="eyebrow"><span>${escapeHtml(module.label)}</span> RESUME</p><h3>${escapeHtml(module.title)}</h3><ul>${content}</ul></section>`;
-    }).join('');
-    about.appendChild(modules);
-  }
-
-  function renderPdfWorks() {
-    const container = document.querySelector('#pdf-portfolio');
-    if (!container || !Array.isArray(data.pdfWorks)) return;
-    container.innerHTML = `<div class="pdf-wrap"><div class="pdf-heading"><p class="eyebrow"><span>05 / PDF WORKS</span> ARCHIVE</p><h2>完整作品，<em>一页打开。</em></h2></div><div class="pdf-grid">${data.pdfWorks.map((work) => {
-      const available = work.status && work.status.includes('可');
-      const actions = available ? `<a href="${escapeHtml(work.file)}" target="_blank" rel="noreferrer">在线预览 ↗</a><a href="${escapeHtml(work.file)}" download>下载 PDF ↓</a>` : '<span class="pdf-pending">文件待上传</span>';
-      return `<article class="pdf-card"><div class="pdf-cover"><span>PDF</span><strong>${escapeHtml(work.title)}</strong><small>${escapeHtml(work.year)}</small></div><div class="pdf-card-body"><p class="pdf-type">${escapeHtml(work.type)}</p><h3>${escapeHtml(work.title)}</h3><p>${escapeHtml(work.description)}</p><div class="pdf-actions">${actions}</div></div></article>`;
-    }).join('')}</div></div>`;
-  }
-
-  function setupModuleStyles() {
-    const style = document.createElement('style');
-    style.textContent = `.module-dock{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:95px}.data-module{border-top:1px solid var(--line);padding-top:22px}.data-module h3{font-size:28px;letter-spacing:-.07em;margin:18px 0 28px}.data-module ul{list-style:none;padding:0;margin:0}.data-module li{display:grid;grid-template-columns:82px 1fr;gap:12px;border-top:1px solid var(--line);padding:13px 0;font:10px/1.6 var(--mono);color:var(--muted)}.data-module li>b{font-weight:400;color:var(--accent)}.data-module li span{display:grid;gap:3px}.data-module li strong{font:700 12px/1.35 var(--sans);color:var(--ink)}.data-module li small{font:10px/1.7 var(--mono);color:var(--muted)}@media(max-width:760px){.module-dock{display:block;margin-top:70px}.data-module{margin-bottom:55px}.data-module h3{font-size:25px}.data-module li{grid-template-columns:72px 1fr}}`;
-    document.head.appendChild(style);
-  }
-
-  function setupPdfStyles() {
-    const style = document.createElement('style');
-    style.textContent = `.pdf-portfolio{background:var(--paper);padding:100px 6vw 125px;border-top:1px solid var(--line)}.pdf-wrap{width:88vw;max-width:1250px;margin:0 auto}.pdf-heading{display:flex;align-items:end;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:25px;margin-bottom:42px}.pdf-heading h2{font-size:clamp(40px,5vw,72px);line-height:.98;letter-spacing:-.09em;margin:25px 0 0}.pdf-heading h2 em{font-family:var(--serif);font-weight:400;color:var(--accent)}.pdf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.pdf-card{background:var(--white);border:1px solid var(--line);transition:transform .3s,box-shadow .3s}.pdf-card:hover{transform:translateY(-7px);box-shadow:10px 10px 0 var(--lime)}.pdf-cover{height:220px;background:var(--ink);color:var(--lime);padding:18px;display:flex;flex-direction:column;justify-content:space-between}.pdf-cover span{font:10px var(--mono);color:var(--accent)}.pdf-cover strong{font-size:28px;line-height:1;letter-spacing:-.08em;max-width:220px}.pdf-cover small{font:10px var(--mono);color:#b5c2b3}.pdf-card-body{padding:19px}.pdf-type{font:10px var(--mono);color:var(--accent);margin:0 0 13px}.pdf-card h3{font-size:16px;letter-spacing:-.04em;margin:0 0 10px}.pdf-card-body>p:not(.pdf-type){font-size:12px;line-height:1.7;color:var(--muted);min-height:42px;margin:0}.pdf-actions{display:flex;gap:16px;border-top:1px solid var(--line);margin-top:18px;padding-top:14px;align-items:center}.pdf-actions a{color:var(--ink);font:10px var(--mono);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:4px}.pdf-pending{font:10px var(--mono);color:var(--muted)}@media(max-width:760px){.pdf-portfolio{padding:80px 6vw 90px}.pdf-heading{display:block}.pdf-grid{display:block}.pdf-card{margin-bottom:20px}.pdf-cover{height:190px}}`;
-    document.head.appendChild(style);
-  }
-
-  setupModuleStyles();
-  setupPdfStyles();
-  renderSkills();
-  renderProjects();
-  removeHeroArt();
-  renderPortrait();
-  renderResumeModules();
-  renderPdfWorks();
-  typeRole();
-  setupNavigation();
-  setupProjectFilters();
-  setupContactForm();
-}());
+ main.querySelector('.skill-grid + .cv-note')?.remove();
+}
+function detail(slug){
+ const p=all.find(p=>p.slug===slug);
+ if(!p){main.innerHTML='<div class="shell detail"><h1>未找到这个项目。</h1><a class="text-link" href="/#project">返回作品索引 ↗</a></div>';return;}
+ const isExperiment=experiments.includes(p),index=all.indexOf(p),next=all[(index+1)%all.length];
+ document.title=`${p.title} — Protoaxis Studio`;
+ main.innerHTML=`<div class="shell detail"><div class="detail-top"><a href="/#${isExperiment?'wallpaper':'project'}" data-return>← 返回${isExperiment?'实验':'作品'}索引</a><span class="label">${p.status==='placeholder'?'DETAIL TEMPLATE / 模板演示':'PROJECT / '+esc(p.year||'')}</span></div><div class="detail-grid"><aside class="detail-info"><span class="label">${String(index+1).padStart(2,'0')} / ${isExperiment?'IMAGE STUDIES':'SELECTED WORK'}</span><h1>${esc(p.title)}</h1><p>${esc(p.summary)}</p><dl><dt>年份 / YEAR</dt><dd>${esc(p.year||'—')}</dd><dt>职责 / ROLE</dt><dd>${esc(p.role.join(' / ')||'—')}</dd><dt>媒介 / MEDIUM</dt><dd>${esc(p.category.join(' / ')||'—')}</dd>${p.contribution.length?`<dt>贡献</dt><dd>${p.contribution.map(esc).join('<br>')}</dd>`:''}${p.credits.length?`<dt>署名</dt><dd>${p.credits.map(esc).join('<br>')}</dd>`:''}${p.awards.length?`<dt>荣誉</dt><dd>${p.awards.map(esc).join('<br>')}</dd>`:''}</dl></aside><div class="detail-gallery"><figure>${image(p.cover,{zoom:true,eager:true,index:'01'})}<figcaption>${esc(p.cover?.caption||(p.cover?'01 / 封面':'01 / 封面位置 · 素材待补充'))}</figcaption></figure>${p.gallery.length?p.gallery.map((m,i)=>`<figure>${m.type==='video'?`<video class="media" controls muted playsinline preload="none" src="${esc(safe(m.src))}" ${safe(m.poster)?`poster="${esc(m.poster)}"`:''}></video>`:image(m,{zoom:true,index:String(i+2).padStart(2,'0')})}<figcaption>${esc(m.caption||'')}</figcaption></figure>`).join(''):`<figure>${placeholder('02','细节 / 制作过程 · 素材待补充','1.2')}<figcaption>02 / 可按素材配置比例与完整展示方式</figcaption></figure>`}<figure><div id="project-model"></div><figcaption>03 / ${p.model?.src?'交互模型':'模型展示预留 · 尚无模型文件'}</figcaption></figure></div></div><a class="next-project" href="${route(next)}"><span class="label">NEXT / ${next.status==='placeholder'?'下一个模板':'下一个项目'}</span><strong>${esc(next.title)} ↗</strong></a></div>`;
+ mountModel(document.querySelector('#project-model'),p.model);
+ document.querySelectorAll('video').forEach(v=>v.addEventListener('error',()=>v.replaceWith(makePlaceholder('视频无法加载'))));
+}
+function makePlaceholder(label){const t=document.createElement('div');t.innerHTML=placeholder('—',label);return t.firstElementChild;}
+let observers=[];
+async function mountModel(host,config={}){
+ if(!safe(config.src)){host.innerHTML=placeholder('3D','模型素材待补充');return;}
+ host.innerHTML=`<div class="model-slot">${config.poster?image({src:config.poster,alt:config.alt,fit:'contain'}):placeholder('3D','模型封面待补充')}<button class="model-start">查看 3D</button></div><div class="model-status" role="status">模型待启用</div>`;
+ host.querySelector('button').onclick=async()=>{
+  const slot=host.querySelector('.model-slot'),status=host.querySelector('.model-status');
+  host.querySelector('button').remove();status.textContent='模型加载中…';let timer;
+  const failed=()=>{clearTimeout(timer);slot.innerHTML=config.poster?image({src:config.poster,alt:config.alt,fit:'contain'}):placeholder('3D','模型无法加载');status.textContent='模型加载失败，已保留静态展示。';host.querySelector('.model-controls')?.remove();bindImages(host);};
+  try{
+   timer=setTimeout(failed,25000);
+   await import('/vendor/model-viewer.min.js');
+   if(!host.isConnected)return;
+   const viewer=document.createElement('model-viewer');viewer.alt=config.alt||'项目交互模型';viewer.setAttribute('camera-controls','');viewer.setAttribute('touch-action','pan-y');viewer.setAttribute('interaction-prompt','none');viewer.setAttribute('camera-orbit',config.cameraOrbit||'30deg 75deg 105%');viewer.setAttribute('field-of-view',config.fieldOfView||'30deg');viewer.setAttribute('min-camera-orbit',config.minCameraOrbit||'auto auto 50%');viewer.setAttribute('max-camera-orbit',config.maxCameraOrbit||'auto auto 200%');viewer.setAttribute('shadow-intensity','0.4');if(safe(config.environmentImage))viewer.setAttribute('environment-image',config.environmentImage);
+   viewer.addEventListener('error',failed,{once:true});viewer.addEventListener('load',()=>{clearTimeout(timer);status.textContent='拖动旋转 · 双指缩放';const controls=document.createElement('div');controls.className='model-controls';controls.innerHTML='<button>恢复视角</button><button>停用交互</button>';controls.children[0].onclick=()=>{viewer.cameraOrbit=config.cameraOrbit||'30deg 75deg 105%';viewer.fieldOfView=config.fieldOfView||'30deg';viewer.jumpCameraToGoal();};controls.children[1].onclick=()=>{observer.disconnect();mountModel(host,config);};if(config.autoRotate&&!matchMedia('(prefers-reduced-motion: reduce)').matches){viewer.autoRotate=true;const pause=document.createElement('button');pause.textContent='暂停旋转';pause.onclick=()=>{viewer.autoRotate=!viewer.autoRotate;pause.textContent=viewer.autoRotate?'暂停旋转':'继续旋转';};controls.append(pause);}host.append(controls);},{once:true});
+   slot.replaceChildren(viewer);viewer.src=config.src;
+   const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{viewer.dismissPoster?.();if(!e.isIntersecting)viewer.autoRotate=false;});});observer.observe(host);observers.push(observer);
+  }catch{failed();}
+ };
+ bindImages(host);
+}
+function bindImages(root=document){root.querySelectorAll('img[data-fallback]').forEach(img=>{img.addEventListener('error',()=>{const button=img.closest('.image-button');(button||img).replaceWith(makePlaceholder('素材无法加载 · 请检查路径'));},{once:true});});}
+const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('nav');
+function closeMenu(focus=false){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.innerHTML='菜单 <span>＋</span>';document.body.classList.remove('menu-open');if(focus)menu.focus();}
+menu.onclick=()=>{const open=menu.getAttribute('aria-expanded')!=='true';nav.classList.toggle('open',open);menu.setAttribute('aria-expanded',String(open));menu.innerHTML=open?'关闭 <span>×</span>':'菜单 <span>＋</span>';document.body.classList.toggle('menu-open',open);if(open)nav.querySelector('a').focus();};
+document.addEventListener('keydown',e=>{if(menu.getAttribute('aria-expanded')==='true'){if(e.key==='Escape')closeMenu(true);if(e.key==='Tab'){const items=[menu,...nav.querySelectorAll('a')],first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}}});
+matchMedia('(min-width:701px)').addEventListener('change',()=>closeMenu());
+const lightbox=document.querySelector('#lightbox');let returnFocus;
+lightbox.querySelector('button').onclick=()=>lightbox.close();lightbox.addEventListener('click',e=>{if(e.target===lightbox)lightbox.close();});lightbox.addEventListener('close',()=>returnFocus?.focus());
+let toastTimer;function toast(message){const t=document.querySelector('.toast');t.textContent=message;t.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('visible'),3500);}
+document.addEventListener('click',async e=>{
+ const zoom=e.target.closest('[data-zoom]');if(zoom){returnFocus=zoom;lightbox.querySelector('img').src=zoom.dataset.zoom;lightbox.querySelector('img').alt=zoom.dataset.alt||'';lightbox.querySelector('p').textContent=zoom.dataset.caption||'';lightbox.showModal();return;}
+ const copy=e.target.closest('[data-copy]');if(copy){try{await navigator.clipboard.writeText(copy.dataset.copy);toast('小红书账号已复制');}catch{const field=document.createElement('textarea');field.value=copy.dataset.copy;field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();const ok=document.execCommand('copy');field.remove();copy.focus();toast(ok?'小红书账号已复制':`请复制账号：${copy.dataset.copy}`);}return;}
+ const a=e.target.closest('a');if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;
+ const url=new URL(a.href,location.href);if(url.origin!==location.origin)return;
+ if(a.closest('nav')){closeMenu();if(url.pathname===location.pathname&&url.hash)requestAnimationFrame(()=>{const target=document.getElementById(url.hash.slice(1));if(target){target.tabIndex=-1;target.focus({preventScroll:true});}});}
+ if(url.pathname!==location.pathname){e.preventDefault();if(location.pathname==='/')sessionStorage.setItem('homeScroll',String(scrollY));history.pushState({},'',url.pathname+url.hash);render();if(a.hasAttribute('data-return'))requestAnimationFrame(()=>scrollTo({top:Number(sessionStorage.getItem('homeScroll')||0),behavior:'instant'}));}
+});
+function render(){disposeAtmosphere();observers.forEach(o=>o.disconnect());observers=[];closeMenu();const slug=location.pathname.match(/^\/work\/([^/]+)\/?$/)?.[1];if(slug){let decoded;try{decoded=decodeURIComponent(slug);}catch{decoded='';}detail(decoded);}else if(location.pathname==='/')home();else detail('');bindImages();disposeAtmosphere=initAtmosphere(main);scrollTo({top:0,behavior:'instant'});if(location.hash)requestAnimationFrame(()=>document.getElementById(location.hash.slice(1))?.scrollIntoView());}
+window.addEventListener('popstate',()=>{render();if(location.pathname==='/')requestAnimationFrame(()=>scrollTo({top:Number(sessionStorage.getItem('homeScroll')||0),behavior:'instant'}));});
+render();

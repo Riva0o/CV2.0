@@ -1,58 +1,34 @@
-window.portfolioData = {
-  profile: {
-    name: '何淑玲 Riva',
-    headline: '让艺术与商业，彼此发生。',
-    summary: '你好，我是何淑玲（Riva），一名跨越时尚、品牌空间与数字媒体的设计师，擅长把视觉叙事转化为真实可感的体验。',
-    location: '中国广东省广州市番禺区南村镇',
-    email: '1468406593@qq.com',
-    phone: '+86 188 8892 7133',
-    portrait: '证件照.jpg'
-  },
-  roles: ['数字设计师', '品牌创作者', '空间体验设计师', '视觉叙事者'],
-  skills: [
-    { name: '品牌与视觉设计', level: 92 },
-    { name: '空间与体验设计', level: 88 },
-    { name: '三维 / 数字视觉', level: 84 },
-    { name: '品牌运营与内容策略', level: 81 },
-    { name: '跨平台协作与执行', level: 86 }
-  ],
-  tools: 'Blender · Sketch · Arduino · TouchDesigner · Photoshop · Illustrator · SketchUp · V-Ray · Procreate · MidJourney · Krita AI · DeepSeek · DeepL · Recraft · Lovart',
-  languages: '中文（母语） · 英语（CET-6 / IELTS 6） · 粤语',
-  education: [
-    { period: 'SEP 2026 — NOW', title: '艺术、科技与商业硕士', organization: '岭南大学 · 中国香港' },
-    { period: 'SEP 2017 — JUL 2021', title: '时尚与丝绸设计（室内纺织品设计）文学士', organization: '中国美术学院 CAA · 中国杭州', detail: 'GPA 专业 86.92 / 100 · 全科 85.31 / 100' }
+// 公开内容集中在此编辑。unpublished 条目不会渲染。
+export const site = {
+  name: 'Protoaxis Studio', personalName: '', email: '', socialUrl: '', cvFile: '',
+  location: '广东，中国', account: '125297791',
+  intro: '我是一名数字设计师，也是 Protoaxis Studio 的创始人。我的实践涵盖三维视觉、空间与装置，以及品牌体验，探索数字形态、材质表达与实体制作之间的联系。',
+  hero: { relief: '/media/hero/images/myth-relief-v1.png', image: null, video: null, model: { src: null, poster: null, alt: '', cameraOrbit: '30deg 75deg 105%', fieldOfView: '30deg', autoRotate: false } },
+  about: ['我是一名数字设计师，也是 Protoaxis Studio 的创始人，工作与创作主要在广东广州展开。','我的实践从纺织品、时尚陈列与空间设计延伸至三维视觉、装置和数字内容，关注形态、材质与空间体验之间的关系。在 Protoaxis Studio，我开展视觉与体验设计，并结合三维建模和 3D 打印，探索数字创意在实体场景中的呈现。','我也通过 AI 壁纸与图像实验研究新的视觉表达，并在家居品牌的设计与运营实践中，参与视觉系统、数字内容和线上渠道的建设。','目前于香港岭南大学修读艺术、科技与商业硕士，进一步拓展艺术实践、技术应用与商业语境之间的联系。'],
+  practices: [
+    {date:'2023.07 — 至今', title:'Protoaxis Studio', role:'创始人 / 数字设计师', location:'广州', text:'视觉与体验设计、三维特效与时尚视觉；结合三维建模和 3D 打印，探索数字形态向实体装置及品牌场景的转化。'},
+    {date:'2024.07 — 至今', title:'独立数字媒体实践', role:'内容设计 / 账号运营', location:'广州', text:'数字艺术与 AI 内容创作、视觉叙事及发布运营，通过持续的内容迭代研究个人视觉表达。'},
+    {date:'2025.06 — 至今', title:'广州屿拓贸易有限公司', role:'运营与设计经理', location:'广州', text:'参与家居生活品牌创立与运营，建立品牌视觉系统，并参与独立官网及 TikTok、eBay、SHEIN 等渠道建设。'}
   ],
   experience: [
-    { period: 'JUN 2025 — NOW', title: '运营 & 设计经理', organization: '广州屿拓贸易有限公司', detail: '创立并运营家居生活类品牌，建设品牌视觉识别与库存体系，负责官网、TikTok、eBay、SHEIN 多平台运营。' },
-    { period: 'JUL 2023 — NOW', title: '创始人 & 数字设计师', organization: '广州 Protoaxis 设计工作室', detail: '负责视觉与体验设计、主题快闪、三维特效及时尚视觉，使用立体建造与 3D 打印完成实体落地。' },
-    { period: 'JUL 2024 — NOW', title: '设计师 & 行动主管', organization: '数字媒体账号工作室', detail: '搭建并运营虚拟数字艺术与 AI 内容账号，持续通过内容创作和故事叙述实现增长。' },
-    { period: 'NOV 2021 — JUL 2023', title: '品牌空间设计师', organization: '洋中里商业管理有限公司', detail: '完成商业车库、精品民宿空间项目开发，兼顾空间功能性与美学表现力。' }
+    {date:'2021.11 — 2023.07', title:'洋中里商业管理有限公司', role:'品牌空间设计师', location:'福州', text:'参与商业车库与精品民宿空间设计。'},
+    {date:'2021.09 — 2021.11', title:'上海翰威品牌管理有限公司', role:'产品设计师', location:'上海', text:'品牌视觉形象升级及短视频宣传内容。'},
+    {date:'2021.07 — 2021.09', title:'LOOKNOW', role:'', location:'上海', text:'参与主题橱窗设计，与 Victor Wang 合作推进快闪项目。', internalRole:'橱窗与快闪项目设计；正式岗位未确认'},
+    {date:'2019.01 — 2021.07', title:'M Super Avenir', role:'设计师助理', location:'上海', text:'参与快闪活动、装置与宣传物料设计。', internalNote:'任职性质待确认'},
+    {date:'2019.06 — 2019.07', title:'TONLION / BEYONG', role:'陈列部设计师（实习）', text:'参与 Desso 视觉识别与创意概念设计。', unpublished:true}
   ],
+  education: [{date:'2026.09 — 至今', title:'岭南大学',role:'硕士在读',location:'香港',text:'',internalNote:'艺术、科技与商业硕士正式名称待证书核对'},{date:'2017.09 — 2021.07',title:'中国艺术学院',role:'服装与服饰设计 · 文学士',location:'中国·杭州',text:''}],
   awards: [
-    '2026.03 · 第三届国际文化传承艺术大赛 · 优秀奖',
-    '2025.11 · “东方美学”艺术设计作品征集 · 二等奖、三等奖',
-    '2025.09 · 新加坡 SGADC 艺术设计大赛 · 银奖、铜奖',
-    '2025.08 · BICC 英国国际创意大赛 · 铜奖、荣誉提名奖',
-    '2025.08 · 国际艺术视觉协会大奖《蜕》· 优秀奖',
-    '2019.06 · 美丽乡村住宅设计竞赛 · 梦溪奖'
+    {date:'2026.03',title:'第三届国际文化传承艺术大赛',role:'优秀奖',unpublished:true},
+    {date:'2025.11',title:'“东方美学”艺术设计作品征集',role:'二等奖、三等奖',unpublished:true},
+    {date:'2025.09',title:'新加坡 SGADC 艺术设计大赛',role:'银奖、铜奖',unpublished:true},
+    {date:'2025.08',title:'BICC 英国国际创意大赛',role:'铜奖、荣誉提名奖',unpublished:true},
+    {date:'2025.08',title:'国际艺术视觉协会大奖 ·《蜕》',role:'优秀奖',unpublished:true},
+    {date:'2025.08',title:'国际建筑艺术协会大奖 ·《漂浮水母》',role:'提名奖',unpublished:true}
   ],
-  projects: [
-    { title: 'Protoaxis — 体验与实体品牌', category: 'brand', year: '视觉体验 · 三维特效 · 3D 打印 · 2023 — NOW', visual: 'green', word: 'proto', statement: 'SPACE\nMEETS\nSTORY', image: '项目图片/渲染图04.jpg' },
-    { title: 'AI & 虚拟数字艺术账号', category: 'digital', year: '内容策略 · 1,000+ 粉丝 · 5,000+ 获赞', visual: 'orange', word: 'MAKE\nIT\nREAL.', image: '项目图片/画板备份 20.jpg' },
-    { title: '屿拓家居生活第一品牌', category: 'brand', year: '品牌策略 · 官网 · TikTok / eBay / SHEIN', visual: 'blue', word: 'home / life', image: '项目图片/渲染图05.jpg' },
-    { title: 'Desso 新品牌视觉识别', category: 'brand', year: '唐狮 TONLION · 品牌识别 · 空间陈列 · 2019', visual: 'green', word: 'desso', statement: 'NEW\nBRAND\nIDENTITY', image: '项目图片/渲染图06.jpg' },
-    { title: 'LOOKNOW × Victor Wang', category: 'digital', year: '主题橱窗 · 闪活动 · 空间设计与营销 · 2021', visual: 'orange', word: 'LOOK\nNOW.' },
-    { title: '商业车库与精品民宿', category: 'brand', year: '洋中里商业管理 · 空间项目开发 · 2021 — 2023', visual: 'blue', word: 'space / stay' }
-  ],
-  pdfWorks: [
-    { title: 'Shuling He — 2025 Portfolio', type: '综合设计作品集', year: '2025', description: '包含个人简历、品牌、空间、时尚与数字视觉项目。', file: 'Shuling He_2025.pdf', cover: '', status: '待上传 PDF' },
-    { title: '项目一最终排版', type: '项目作品集', year: '2025', description: '项目一完整排版文件，作为作品过程与成果的独立归档。', file: '', cover: '', status: '待上传 PDF' },
-    { title: '东方美学设计作品集', type: '综合设计作品集', year: '2025', description: '包含东方美学艺术设计作品征集获奖作品。', file: 'assets/pdf/oriental-aesthetics.pdf', cover: '', status: '待上传 PDF' }
-  ],
-  modules: [
-    { label: 'EDUCATION', title: '教育背景', type: 'education' },
-    { label: 'EXPERIENCE', title: '工作经历', type: 'experience' },
-    { label: 'AWARDS', title: '获奖荣誉', type: 'awards' }
-  ],
-  formSuccess: '谢谢你的消息，我会尽快回复。'
+  skills: [['三维与空间','Blender · SketchUp · V-Ray · 3D 打印'],['图像与视觉','Photoshop · Illustrator · Procreate · Sketch'],['交互与创意技术','TouchDesigner · Arduino'],['AI 图像工作流','Midjourney · Krita AI · Recraft · Lovart']],
+  unpublished: {languages:'粤语熟练程度待确认', metrics:'数字艺术：1,000+ 粉丝 / 5,000+ 获赞；AI 内容：约 5,000 粉丝 / 15,000 获赞，统计日期未确认',accountOwnership:'小红书账号归属待确认'}
 };
+const emptyModel = () => ({src:null,poster:null,alt:'',cameraOrbit:'30deg 75deg 105%',fieldOfView:'30deg',autoRotate:false});
+export const projects = Array.from({length:4},(_,i)=>({id:`project-0${i+1}`,slug:`project-0${i+1}`,status:'placeholder',title:'项目待补充',year:null,category:[],role:[],summary:'此页为作品详情模板。项目背景、职责、媒介与署名将在真实内容补充后展示。',contribution:[],credits:[],awards:[],cover:null,gallery:[],model:emptyModel()}));
+export const experiments = Array.from({length:2},(_,i)=>({id:`series-0${i+1}`,slug:`series-0${i+1}`,status:'placeholder',title:'实验系列待补充',year:null,category:[],role:[],summary:'此页为图像实验系列模板。真实素材补充后，将说明 AI 生成、筛选与后期处理的实际分工。',contribution:[],credits:[],awards:[],cover:null,gallery:[],model:emptyModel()}));
